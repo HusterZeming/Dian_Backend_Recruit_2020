@@ -5,17 +5,13 @@ from my_blog.blog_auth import create_token, parse_payload   #导入登录验证�
 import hashlib   #导入哈希模块
 from my_blog.models import *   #导入模型
 from my_blog import app
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker   #导入sessionmaker链接数据库
-
+from my_blog.config import dbFactory
 
 @app.route('/admin/doReg',methods=['POST'])   #注册
 def doReg():
     blog_type = request.args.get('blog_type')   #前端传递blog_type
-    my_engine = create_engine('mysql+pymysql://root:root@localhost/%s' % "blog_" + blog_type)
-    #根据blog_type 动态建立数据库连接
-    Session = sessionmaker(bind=my_engine)
-    db_session = Session()  # 实例化session
+    db_session = dbFactory(blog_type)   #动态建立数据库 dbFactory由my_blog.config传入
+
     name = request.args.get('name')  # 存储http请求中的输入
     email = request.args.get('email')
 
@@ -49,11 +45,8 @@ def doReg():
 
 @app.route('/admin/doLogin',methods=['GET','POST'])   #登陆
 def doLogin():
-    blog_type = request.args.get('blog_type')   #前端传递blog_type
-    my_engine = create_engine('mysql+pymysql://root:root@localhost/%s' % "blog_" + blog_type)
-    # 根据blog_type 动态建立数据库连接
-    Session = sessionmaker(bind=my_engine)
-    db_session = Session()   #实例化session
+    blog_type = request.args.get('blog_type')  # 前端传递blog_type
+    db_session = dbFactory(blog_type)  #动态建立数据库连接 dbFactory由my_blog.config传入
 
     name = request.args.get('name')   #存储http请求中的输入
     password = hashlib.md5(request.args.get('password').encode("utf-8"))   #将密码进行MD5处理化进行验证

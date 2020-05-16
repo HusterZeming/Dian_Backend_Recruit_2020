@@ -10,14 +10,10 @@ def jwt_query_params_auth():
     if request.path == '/admin/doReg':
         return
     token = request.headers.get('authorization')   #通过请求头写入token
-    result = parse_payload(token)   #解析token来校验传入的token
+    result = parse_payload(token)   #解析token来校验传入的token parse_payload由blog_auth传入
     if not result['status']:
         return jsonify(result)
-    my_engine = create_engine('mysql+pymysql://root:root@localhost/%s' % "blog_" + result["data"]["area"])
-    #根据token解析出的area动态建立数据库链接
-    Session = sessionmaker(bind=my_engine)
-    db_session = Session()   #实例化session
-    g.db = db_session   #全局变量存储db以便使用
+    g.db = dbFactory(result["data"]["area"])  #根据token解析出的area动态建立数据库链接  dbFactory由my_blog.config传入
     g.info = result['data']   #全局变量g存储用户信息
 
 

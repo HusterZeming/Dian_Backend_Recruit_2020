@@ -15,11 +15,11 @@ def doReg():
     name = request.args.get('name')  # 存储http请求中的输入
     email = request.args.get('email')
 
-    cur_user = db_session.query(User).filter(User.name == name).first()  # 判断邮箱是否已经存在
+    cur_user = db_session.query(User).filter(User.name == name).first()  # 判断用户是否已经存在
     if cur_user is None:
         pass
     else:
-        return jsonify("User already exists!")   #如果邮箱存在，返回“用户已存在”
+        return jsonify("User already exists!")   #如果用户存在，返回“用户已存在”
 
     cur_user = db_session.query(User).filter(User.email == email).first()   #判断邮箱是否已经存在
     if cur_user is None:
